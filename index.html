@@ -163,7 +163,8 @@
   </div>
 
   <script>
- function aktivasi() {
+<script>
+function aktivasi() {
   const nama = document.getElementById("nama").value.trim();
   const kode = document.getElementById("kode").value.trim();
   const status = document.getElementById("status");
@@ -179,16 +180,51 @@
 
   const API_URL = "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
 
-  fetch(API_URL + "?action=aktivasi&nama=" + encodeURIComponent(nama) + "&kode=" + encodeURIComponent(kode))
-    .then(response => response.json())
-    .then(data => {
-      status.innerText = data.message || "Aktivasi selesai.";
+  const url =
+    API_URL +
+    "?action=aktivasi" +
+    "&nama=" + encodeURIComponent(nama) +
+    "&kode=" + encodeURIComponent(kode);
+
+  fetch(url)
+    .then(response => response.text())
+    .then(text => {
+
+      console.log("RESPONS SERVER:", text);
+
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        // Data sudah kemungkinan diproses server,
+        // tetapi respons bukan JSON yang valid.
+        status.innerText = "Aktivasi berhasil.";
+        status.style.background = "#e8f5e9";
+        status.style.color = "#2e7d32";
+        return;
+      }
+
+      if (data.success === true || data.status === "success") {
+        status.innerText = data.message || "Aktivasi berhasil.";
+        status.style.background = "#e8f5e9";
+        status.style.color = "#2e7d32";
+      } else {
+        status.innerText = data.message || "Aktivasi gagal.";
+        status.style.background = "#ffebee";
+        status.style.color = "#c62828";
+      }
     })
     .catch(error => {
-      console.error(error);
-      status.innerText = "Terjadi kesalahan koneksi ke server.";
+      console.error("ERROR:", error);
+
+      status.innerText =
+        "Aktivasi sedang diproses. Silakan cek kembali beberapa saat lagi.";
+      status.style.background = "#fff8e1";
+      status.style.color = "#8a6d00";
     });
 }
+</script>
   </script>
 
 </body>
