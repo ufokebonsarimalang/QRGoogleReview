@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Kartu Google Review Otomatis</title>
-    <!-- Library QRCodeJS & Tailwind CSS -->
+    <title>Generator Kartu Google Review</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -12,13 +11,13 @@
 
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6">
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-1">Generator Kartu Review</h1>
-        <p class="text-xs text-gray-500 text-center mb-6">Masukkan nama bisnis atau link maps, kartu siap download dalam detik.</p>
+        <p class="text-xs text-gray-500 text-center mb-6">Tempel link Maps atau ketik nama bisnis, kartu langsung jadi.</p>
 
         <!-- Form Input -->
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Bisnis / Link Google Maps</label>
-                <input type="text" id="inputQuery" placeholder="Contoh: Kopi Senja atau https://maps.app.goo.gl/..." 
+                <label class="block text-sm font-medium text-gray-700 mb-1">Link Google Maps / Nama Bisnis</label>
+                <input type="text" id="inputQuery" placeholder="Contoh: https://maps.app.goo.gl/... atau Nama Toko" 
                     class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
             </div>
 
@@ -30,10 +29,10 @@
 
         <!-- Status Loading -->
         <div id="loadingStatus" class="hidden text-center mt-4 text-blue-600 text-sm font-medium animate-pulse">
-            Sedang merakit link mobile & menyusun gambar...
+            Sedang merakit QR code dan menyusun gambar...
         </div>
 
-        <!-- Canvas Tersembunyi untuk Render Gambar -->
+        <!-- Canvas Tersembunyi -->
         <canvas id="canvas" width="1080" height="1080" class="hidden"></canvas>
 
         <!-- Hasil Akhir -->
@@ -50,17 +49,14 @@
     </div>
 
     <script>
-        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
-
-        async function generateCard() {
-            const query = document.getElementById('inputQuery').value.trim();
+        function generateCard() {
+            let query = document.getElementById('inputQuery').value.trim();
             const loadingStatus = document.getElementById('loadingStatus');
             const resultSection = document.getElementById('resultSection');
             const btnProcess = document.getElementById('btnProcess');
 
             if (!query) {
-                alert("Mohon masukkan nama bisnis atau link Google Maps!");
+                alert("Mohon masukkan link Google Maps atau nama bisnis!");
                 return;
             }
 
@@ -68,69 +64,79 @@
             resultSection.classList.add('hidden');
             btnProcess.disabled = true;
 
-            try {
-                // 1. Panggil GAS untuk merubah input menjadi link mobile review
-                const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(query)}`);
-                const mobileLink = await response.text();
+            // Logika cerdas pemrosesan link langsung di browser
+            let reviewLink = "";
+            
+            if (query.includes("placeid=")) {
+                // Jika link mengandung placeid secara langsung
+                const match = query.match(/placeid=([^&]+)/);
+                if (match) {
+                    reviewLink = `https://search.google.com/local/writereview?placeid=${match[1]}`;
+                }
+            } else if (query.includes("http://") || query.includes("https://")) {
+                // Jika link berupa URL standar/pendek maps, arahkan user langsung ke pencarian tempat tersebut di maps
+                reviewLink = query;
+            } else {
+                // Jika yang diketik adalah teks nama bisnis
+                reviewLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+            }
 
-                // 2. Buat QR Code secara instan di background
-                const tempDiv = document.createElement('div');
-                new QRCode(tempDiv, {
-                    text: mobileLink,
-                    width: 400,
-                    height: 400,
-                    correctLevel: QRCode.CorrectLevel.H
-                });
+            // Buat QR Code secara instan
+            const tempDiv = document.createElement('div');
+            new QRCode(tempDiv, {
+                text: reviewLink,
+                width: 400,
+                height: 400,
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
-                // Tunggu render QR selesai sejenak
-                setTimeout(() => {
-                    const canvas = document.getElementById('canvas');
-                    const ctx = canvas.getContext('2d');
+            setTimeout(() => {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
 
-                    const template = new Image();
-                    template.src = 'template.png'; // Pastikan file gambar templat ada di folder yang sama
+                const template = new Image();
+                template.src = 'template.png'; // Pastikan file template.png ada di folder yang sama
 
-                    template.onload = function() {
-                        // Gambar templat ke ukuran penuh 1080x1080
-                        ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+                template.onload = function() {
+                    ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
 
-                        const qrCanvas = tempDiv.querySelector('canvas');
-                        const qrImage = new Image();
-                        qrImage.src = qrCanvas.toDataURL("image/png");
-
-                        qrImage.onload = function() {
-                            // --- ATUR POSISI DAN UKURAN QR CODE DI TEMPLAT ANDA ---
-                            // Sesuaikan angka di bawah ini jika letak QR di template Anda ingin digeser:
-                            const qrX = 350;  // Titik koordinat X (geser kiri-kanan)
-                            const qrY = 440;  // Titik koordinat Y (geser atas-bawah)
-                            const qrSize = 380; // Ukuran lebar & tinggi kotak QR
-
-                            ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
-
-                            // Tampilkan hasil akhir ke layar
-                            const finalDataUrl = canvas.toDataURL("image/png");
-                            document.getElementById('outputPreview').src = finalDataUrl;
-                            document.getElementById('downloadBtn').href = finalDataUrl;
-
-                            loadingStatus.classList.add('hidden');
-                            resultSection.classList.remove('hidden');
-                            btnProcess.disabled = false;
-                        };
-                    };
-
-                    template.onerror = function() {
+                    const qrCanvas = tempDiv.querySelector('canvas');
+                    if (!qrCanvas) {
+                        alert("Gagal membuat QR Code.");
                         loadingStatus.classList.add('hidden');
                         btnProcess.disabled = false;
-                        alert("Gagal memuat file 'template.png'. Pastikan gambar templat ada di folder yang sama!");
+                        return;
+                    }
+
+                    const qrImage = new Image();
+                    qrImage.src = qrCanvas.toDataURL("image/png");
+
+                    qrImage.onload = function() {
+                        // --- SESUAIKAN POSISI & UKURAN QR DI SINI ---
+                        const qrX = 350;  // Geser kiri-kanan
+                        const qrY = 440;  // Geser atas-bawah (masuk ke dalam kotak)
+                        const qrSize = 380; // Ukuran lebar & tinggi QR
+
+                        ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+
+                        const finalDataUrl = canvas.toDataURL("image/png");
+                        document.getElementById('outputPreview').src = finalDataUrl;
+                        document.getElementById('downloadBtn').href = finalDataUrl;
+
+                        loadingStatus.classList.add('hidden');
+                        resultSection.classList.add('hidden'); // Sembunyikan pesan loading
+                        resultSection.classList.remove('hidden'); // Tampilkan hasil
+                        btnProcess.disabled = false;
                     };
+                };
 
-                }, 500);
+                template.onerror = function() {
+                    loadingStatus.classList.add('hidden');
+                    btnProcess.disabled = false;
+                    alert("Gagal memuat file 'template.png'. Pastikan gambar templat ada di folder GitHub yang sama!");
+                };
 
-            } catch (error) {
-                loadingStatus.classList.add('hidden');
-                btnProcess.disabled = false;
-                alert("Terjadi kesalahan koneksi ke server: " + error);
-            }
+            }, 500);
         }
     </script>
 </body>
