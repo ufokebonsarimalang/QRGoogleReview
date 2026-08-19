@@ -3,63 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKER SMARTCARD GENERATOR</title>
-    <!-- Gunakan Font Monospace ala Terminal -->
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+    <title>Generator Kartu Google Review</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Courier Prime', monospace; background-color: #0d0d0d; color: #00ff41; }
-        .hacker-card { background: #1a1a1a; border: 1px solid #00ff41; box-shadow: 0 0 15px #00ff4133; }
-        input { background: #000 !important; color: #00ff41 !important; border: 1px solid #00ff41 !important; }
-        /* Tombol Premium */
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .panel { background: #1e293b; border: 1px solid #334155; }
+        input { background: #0f172a !important; color: #ffffff !important; border: 1px solid #475569 !important; }
         .btn-premium { 
-            background: linear-gradient(45deg, #00ff41, #008f11); 
-            color: #000; font-weight: bold; text-transform: uppercase;
-            box-shadow: 0 0 10px #00ff41; border: none;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8); 
+            color: white; font-weight: 600; border: none;
+        }
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white; font-weight: 600; border: none;
         }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="hacker-card w-full max-w-lg rounded-xl p-6">
-        <h1 class="text-xl font-bold text-center mb-6 tracking-widest text-[#00ff41]">
-            > GENERATOR SMARTCARD GOOGLE REVIEW
+    <div class="panel w-full max-w-lg rounded-2xl shadow-2xl p-8">
+        <h1 class="text-xl font-semibold text-center mb-8 text-slate-100 tracking-wide">
+            SMARTCARD GOOGLE REVIEW
         </h1>
 
         <!-- Form Input -->
-        <div class="space-y-4">
+        <div class="space-y-6">
             <div>
-                <label class="block text-sm mb-1">ENTER PLACE ID:</label>
-                <input type="text" id="inputQuery" placeholder="ChIJ..." 
-                    class="w-full px-4 py-3 rounded-lg focus:outline-none">
+                <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Place ID Google</label>
+                <input type="text" id="inputQuery" placeholder="Contoh: ChIJNWi0z2-deC4RQzfDw8kDoDA" 
+                    class="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
             </div>
 
             <button onclick="generateCard()" id="btnProcess"
-                class="w-full py-3 rounded-lg btn-premium transition transform hover:scale-105 active:scale-95">
-                [ EXECUTE GENERATE ]
+                class="w-full py-3 rounded-xl btn-premium transition transform hover:scale-[1.02] active:scale-95 shadow-lg text-sm">
+                PROSES & BUAT KARTU
             </button>
         </div>
 
-        <div id="loadingStatus" class="hidden text-center mt-4 text-[#00ff41] animate-pulse">
-            > ACCESSING GOOGLE DATABASE...
+        <!-- Status Loading -->
+        <div id="loadingStatus" class="hidden text-center mt-6 text-blue-400 text-sm font-medium animate-pulse">
+            Merakit QR Code...
         </div>
 
+        <!-- Canvas Tersembunyi -->
         <canvas id="canvas" width="1080" height="1080" class="hidden"></canvas>
 
-        <div id="resultSection" class="hidden mt-6 text-center border-t border-[#00ff41] pt-4">
-            <h3 class="text-sm font-semibold mb-3">[ STATUS: SUCCESS ]</h3>
-            <div class="flex justify-center mb-4">
-                <img id="outputPreview" class="w-64 rounded-lg border border-[#00ff41]" alt="Result">
+        <!-- Hasil Akhir -->
+        <div id="resultSection" class="hidden mt-8 text-center border-t border-slate-700 pt-6">
+            <h3 class="text-sm font-medium mb-4 text-slate-300">Kartu Berhasil Dibuat! 🎉</h3>
+            <div class="flex justify-center mb-6">
+                <img id="outputPreview" class="w-64 rounded-2xl shadow-xl border border-slate-700" alt="Hasil Kartu Review">
             </div>
-            <a id="downloadBtn" download="SmartCard_Review.png" 
-                class="inline-block bg-white text-black px-6 py-2 rounded font-bold hover:bg-[#00ff41] transition">
-                DOWNLOAD PNG
+            <a id="downloadBtn" download="Kartu-Google-Review.png" 
+                class="inline-block w-full py-3 rounded-xl btn-download transition shadow-lg text-sm">
+                DOWNLOAD GAMBAR KARTU (PNG)
             </a>
         </div>
     </div>
 
     <script>
+        // URL WEB APP GOOGLE APPS SCRIPT ANDA (TETAP AMAN)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
 
         async function generateCard() {
@@ -68,7 +73,10 @@
             const resultSection = document.getElementById('resultSection');
             const btnProcess = document.getElementById('btnProcess');
 
-            if (!query) { alert("INPUT MISSING!"); return; }
+            if (!query) {
+                alert("Mohon masukkan Place ID!");
+                return;
+            }
 
             loadingStatus.classList.remove('hidden');
             resultSection.classList.add('hidden');
@@ -79,35 +87,64 @@
                 const reviewLink = await response.text();
 
                 const tempDiv = document.createElement('div');
-                new QRCode(tempDiv, { text: reviewLink, width: 400, height: 400, correctLevel: QRCode.CorrectLevel.H });
+                new QRCode(tempDiv, {
+                    text: reviewLink,
+                    width: 400,
+                    height: 400,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
 
                 setTimeout(() => {
                     const canvas = document.getElementById('canvas');
                     const ctx = canvas.getContext('2d');
+
                     const template = new Image();
                     template.src = 'template.png';
 
                     template.onload = function() {
                         ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+
                         const qrCanvas = tempDiv.querySelector('canvas');
+                        if (!qrCanvas) {
+                            alert("Gagal membuat QR Code.");
+                            loadingStatus.classList.add('hidden');
+                            btnProcess.disabled = false;
+                            return;
+                        }
+
                         const qrImage = new Image();
                         qrImage.src = qrCanvas.toDataURL("image/png");
 
                         qrImage.onload = function() {
-                            ctx.drawImage(qrImage, 350, 450, 340, 340);
+                            // Koordinat persis seperti file asli Anda yang sudah pas
+                            const qrX = 375;  
+                            const qrY = 475;  
+                            const qrSize = 330; 
+
+                            ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+
                             const finalDataUrl = canvas.toDataURL("image/png");
                             document.getElementById('outputPreview').src = finalDataUrl;
                             document.getElementById('downloadBtn').href = finalDataUrl;
+
                             loadingStatus.classList.add('hidden');
                             resultSection.classList.remove('hidden');
                             btnProcess.disabled = false;
                         };
                     };
+
+                    template.onerror = function() {
+                        loadingStatus.classList.add('hidden');
+                        btnProcess.disabled = false;
+                        alert("Gagal memuat file 'template.png'. Pastikan gambar templat ada di folder GitHub!");
+                    };
+
                 }, 500);
+
             } catch (error) {
                 loadingStatus.classList.add('hidden');
                 btnProcess.disabled = false;
-                alert("SYSTEM ERROR: " + error);
+                alert("Gagal terhubung ke server: " + error);
             }
         }
     </script>
