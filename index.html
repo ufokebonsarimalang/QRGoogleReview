@@ -11,14 +11,15 @@
 
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6">
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-1">Generator Kartu Review</h1>
-        <p class="text-xs text-gray-500 text-center mb-6">Tempel link Maps atau ketik nama bisnis, kartu langsung jadi.</p>
+        <p class="text-xs text-gray-500 text-center mb-6">Tempel Place ID (ChIJ...) atau Nama Bisnis untuk membuat kartu.</p>
 
         <!-- Form Input -->
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Link Google Maps / Nama Bisnis</label>
-                <input type="text" id="inputQuery" placeholder="Contoh: https://maps.app.goo.gl/... atau Nama Toko" 
+                <label class="block text-sm font-medium text-gray-700 mb-1">Place ID / Nama Bisnis</label>
+                <input type="text" id="inputQuery" placeholder="Contoh: ChIJNWi0z2-deC4RQzfDw8kDoDA" 
                     class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                <p class="text-[11px] text-gray-400 mt-1">Tip: Cari Place ID resmi via Google Place ID Finder agar 100% akurat.</p>
             </div>
 
             <button onclick="generateCard()" id="btnProcess"
@@ -29,7 +30,7 @@
 
         <!-- Status Loading -->
         <div id="loadingStatus" class="hidden text-center mt-4 text-blue-600 text-sm font-medium animate-pulse">
-            Sedang merakit QR code dan menyusun gambar...
+            Menghubungkan ke server & merakit QR Code...
         </div>
 
         <!-- Canvas Tersembunyi -->
@@ -49,14 +50,17 @@
     </div>
 
     <script>
-        function generateCard() {
+        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+        const SCRIPT_URL = "MASUKKAN_URL_WEB_APP_ANDA_DISINI";
+
+        async function generateCard() {
             let query = document.getElementById('inputQuery').value.trim();
             const loadingStatus = document.getElementById('loadingStatus');
             const resultSection = document.getElementById('resultSection');
             const btnProcess = document.getElementById('btnProcess');
 
             if (!query) {
-                alert("Mohon masukkan link Google Maps atau nama bisnis!");
+                alert("Mohon masukkan Place ID atau Nama Bisnis!");
                 return;
             }
 
@@ -64,79 +68,72 @@
             resultSection.classList.add('hidden');
             btnProcess.disabled = true;
 
-            // Logika cerdas pemrosesan link langsung di browser
-            let reviewLink = "";
-            
-            if (query.includes("placeid=")) {
-                // Jika link mengandung placeid secara langsung
-                const match = query.match(/placeid=([^&]+)/);
-                if (match) {
-                    reviewLink = `https://search.google.com/local/writereview?placeid=${match[1]}`;
-                }
-            } else if (query.includes("http://") || query.includes("https://")) {
-                // Jika link berupa URL standar/pendek maps, arahkan user langsung ke pencarian tempat tersebut di maps
-                reviewLink = query;
-            } else {
-                // Jika yang diketik adalah teks nama bisnis
-                reviewLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-            }
+            try {
+                // Minta URL review matang dari Google Apps Script
+                const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(query)}`);
+                const reviewLink = await response.text();
 
-            // Buat QR Code secara instan
-            const tempDiv = document.createElement('div');
-            new QRCode(tempDiv, {
-                text: reviewLink,
-                width: 400,
-                height: 400,
-                correctLevel: QRCode.CorrectLevel.H
-            });
+                // Buat QR Code secara instan berdasarkan link dari GAS
+                const tempDiv = document.createElement('div');
+                new QRCode(tempDiv, {
+                    text: reviewLink,
+                    width: 400,
+                    height: 400,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
 
-            setTimeout(() => {
-                const canvas = document.getElementById('canvas');
-                const ctx = canvas.getContext('2d');
+                setTimeout(() => {
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
 
-                const template = new Image();
-                template.src = 'template.png'; // Pastikan file template.png ada di folder yang sama
+                    const template = new Image();
+                    template.src = 'template.png'; // Pastikan file template.png ada di folder GitHub yang sama
 
-                template.onload = function() {
-                    ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+                    template.onload = function() {
+                        ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
 
-                    const qrCanvas = tempDiv.querySelector('canvas');
-                    if (!qrCanvas) {
-                        alert("Gagal membuat QR Code.");
-                        loadingStatus.classList.add('hidden');
-                        btnProcess.disabled = false;
-                        return;
-                    }
+                        const qrCanvas = tempDiv.querySelector('canvas');
+                        if (!qrCanvas) {
+                            alert("Gagal membuat QR Code.");
+                            loadingStatus.classList.add('hidden');
+                            btnProcess.disabled = false;
+                            return;
+                        }
 
-                    const qrImage = new Image();
-                    qrImage.src = qrCanvas.toDataURL("image/png");
+                        const qrImage = new Image();
+                        qrImage.src = qrCanvas.toDataURL("image/png");
 
-                    qrImage.onload = function() {
-                        // --- SESUAIKAN POSISI & UKURAN QR DI SINI ---
-                        const qrX = 360;  // Geser kiri-kanan
-                        const qrY = 460;  // Geser atas-bawah (masuk ke dalam kotak)
-                        const qrSize = 350; // Ukuran lebar & tinggi QR
+                        qrImage.onload = function() {
+                            // --- ATUR POSISI & UKURAN QR DI SINI ---
+                            const qrX = 355;  // Geser kiri-kanan
+                            const qrY = 460;  // Geser atas-bawah (masuk ke dalam kotak)
+                            const qrSize = 350; // Ukuran lebar & tinggi QR
 
-                        ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+                            ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
 
-                        const finalDataUrl = canvas.toDataURL("image/png");
-                        document.getElementById('outputPreview').src = finalDataUrl;
-                        document.getElementById('downloadBtn').href = finalDataUrl;
+                            const finalDataUrl = canvas.toDataURL("image/png");
+                            document.getElementById('outputPreview').src = finalDataUrl;
+                            document.getElementById('downloadBtn').href = finalDataUrl;
 
-                        loadingStatus.classList.add('hidden');
-                        resultSection.classList.add('hidden'); // Sembunyikan pesan loading
-                        resultSection.classList.remove('hidden'); // Tampilkan hasil
-                        btnProcess.disabled = false;
+                            loadingStatus.classList.add('hidden');
+                            resultSection.classList.remove('hidden');
+                            btnProcess.disabled = false;
+                        };
                     };
-                };
 
-                template.onerror = function() {
-                    loadingStatus.classList.add('hidden');
-                    btnProcess.disabled = false;
-                    alert("Gagal memuat file 'template.png'. Pastikan gambar templat ada di folder GitHub yang sama!");
-                };
+                    template.onerror = function() {
+                        loadingStatus.classList.add('hidden');
+                        btnProcess.disabled = false;
+                        alert("Gagal memuat file 'template.png'. Pastikan gambar templat ada di folder GitHub yang sama!");
+                    };
 
-            }, 500);
+                }, 500);
+
+            } catch (error) {
+                loadingStatus.classList.add('hidden');
+                btnProcess.disabled = false;
+                alert("Gagal terhubung ke server: " + error);
+            }
         }
     </script>
 </body>
