@@ -163,21 +163,32 @@
   </div>
 
   <script>
-    function aktivasi() {
+ function aktivasi() {
+  const nama = document.getElementById("nama").value.trim();
+  const kode = document.getElementById("kode").value.trim();
+  const status = document.getElementById("status");
 
-      const nama = document.getElementById("nama").value.trim();
-      const kode = document.getElementById("kode").value.trim();
-      const status = document.getElementById("status");
+  if (!nama || !kode) {
+    status.style.display = "block";
+    status.innerText = "Silakan isi nama toko dan kode aktivasi.";
+    return;
+  }
 
-      status.style.display = "block";
+  status.style.display = "block";
+  status.innerText = "Memproses aktivasi...";
 
-      if (!nama || !kode) {
-        status.innerText = "Silakan isi nama toko dan kode aktivasi.";
-        return;
-      }
+  const API_URL = "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
 
-      status.innerText = "Data diterima. Sistem aktivasi akan diproses.";
-    }
+  fetch(API_URL + "?action=aktivasi&nama=" + encodeURIComponent(nama) + "&kode=" + encodeURIComponent(kode))
+    .then(response => response.json())
+    .then(data => {
+      status.innerText = data.message || "Aktivasi selesai.";
+    })
+    .catch(error => {
+      console.error(error);
+      status.innerText = "Terjadi kesalahan koneksi ke server.";
+    });
+}
   </script>
 
 </body>
