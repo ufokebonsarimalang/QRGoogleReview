@@ -1,360 +1,587 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Aktivasi QR Google Review</title>
+<title>Aktivasi QR Google Review</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#f4f6f8,#e9eef5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
 
-    .container {
-      width: 100%;
-      max-width: 500px;
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 30px 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      text-align: center;
-    }
+.container{
+  width:100%;
+  max-width:500px;
+  background:#fff;
+  border-radius:22px;
+  padding:30px 25px;
+  box-shadow:0 15px 40px rgba(0,0,0,.10);
+  text-align:center;
+}
 
-    .logo {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 20px;
-      border-radius: 20px;
-      background: #eeeeee;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-    }
+.logo{
+  width:80px;
+  height:80px;
+  margin:0 auto 18px;
+  border-radius:20px;
+  background:#f1f3f4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+}
 
-    h1 {
-      margin: 0 0 10px;
-      font-size: 25px;
-      color: #222;
-    }
+h1{
+  margin:0 0 8px;
+  font-size:25px;
+  color:#222;
+}
 
-    .subtitle {
-      margin: 0 0 25px;
-      color: #666;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+.subtitle{
+  margin:0 0 25px;
+  color:#666;
+  font-size:14px;
+  line-height:1.6;
+}
 
-    .form-group {
-      text-align: left;
-      margin-bottom: 18px;
-    }
+.form-group{
+  text-align:left;
+  margin-bottom:17px;
+}
 
-    label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-      font-weight: bold;
-      color: #333;
-    }
+label{
+  display:block;
+  margin-bottom:7px;
+  font-size:14px;
+  font-weight:bold;
+  color:#333;
+}
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 15px;
-      outline: none;
-    }
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:11px;
+  font-size:15px;
+  outline:none;
+}
 
-    input:focus {
-      border-color: #4285f4;
-    }
+input:focus{
+  border-color:#4285f4;
+  box-shadow:0 0 0 3px rgba(66,133,244,.10);
+}
 
-    button {
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      padding: 14px;
-      background: #4285f4;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
-    }
+button{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:14px;
+  background:#4285f4;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:5px;
+}
 
-    button:hover {
-      background: #3367d6;
-    }
+button:hover{
+  background:#3367d6;
+}
 
-    .status {
-      margin-top: 20px;
-      padding: 12px;
-      border-radius: 10px;
-      background: #f5f5f5;
-      color: #666;
-      font-size: 14px;
-      display: none;
-    }
+button:disabled{
+  background:#aaa;
+  cursor:not-allowed;
+}
 
-    .footer {
-      margin-top: 25px;
-      font-size: 12px;
-      color: #999;
-    }
-  </style>
+.status{
+  margin-top:18px;
+  padding:12px;
+  border-radius:10px;
+  font-size:14px;
+  display:none;
+}
+
+.success{
+  background:#e8f5e9;
+  color:#2e7d32;
+}
+
+.error{
+  background:#ffebee;
+  color:#c62828;
+}
+
+.warning{
+  background:#fff8e1;
+  color:#8a6d00;
+}
+
+.qr-box{
+  display:none;
+  margin-top:25px;
+  padding:22px;
+  border-radius:18px;
+  background:#fafafa;
+  border:1px solid #eee;
+}
+
+.qr-box h2{
+  margin:0 0 8px;
+  font-size:21px;
+  color:#222;
+}
+
+.qr-box p{
+  margin:5px 0;
+  color:#666;
+  font-size:13px;
+}
+
+#qrcode{
+  margin:20px auto;
+  display:flex;
+  justify-content:center;
+}
+
+#qrcode img,
+#qrcode canvas{
+  max-width:100%;
+  height:auto;
+}
+
+.review-button{
+  display:block;
+  text-decoration:none;
+  background:#34a853;
+  color:white;
+  padding:13px;
+  border-radius:10px;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+.maps-button{
+  display:block;
+  text-decoration:none;
+  background:#4285f4;
+  color:white;
+  padding:13px;
+  border-radius:10px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.reset-button{
+  background:#777;
+  margin-top:10px;
+}
+
+.footer{
+  margin-top:25px;
+  font-size:12px;
+  color:#999;
+}
+</style>
+
+<!-- QR CODE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="logo">
-      ⭐
-    </div>
+  <div class="logo">
+    ⭐
+  </div>
 
-    <h1>Aktivasi QR Google Review</h1>
+  <h1>Aktivasi QR Google Review</h1>
 
-    <p class="subtitle">
-      Masukkan data untuk mengaktifkan QR Google Review Anda.
+  <p class="subtitle">
+    Aktifkan QR untuk mengarahkan pelanggan ke halaman ulasan Google.
+  </p>
+
+  <div class="form-group">
+    <label for="nama">Nama Toko</label>
+
+    <input
+      type="text"
+      id="nama"
+      placeholder="Masukkan nama toko"
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="kode">Kode Aktivasi</label>
+
+    <input
+      type="text"
+      id="kode"
+      placeholder="Masukkan kode aktivasi"
+    >
+  </div>
+
+  <button id="btnAktivasi" onclick="aktivasi()">
+    AKTIVASI & BUAT QR
+  </button>
+
+  <div id="status" class="status"></div>
+
+  <!-- QR -->
+  <div id="qrBox" class="qr-box">
+
+    <h2>✅ Aktivasi Berhasil</h2>
+
+    <p id="namaHasil"></p>
+
+    <div id="qrcode"></div>
+
+    <p>
+      Scan QR untuk memberikan ulasan Google
     </p>
 
-    <div class="form-group">
-      <label for="nama">Nama Toko</label>
+    <a
+      id="reviewButton"
+      class="review-button"
+      target="_blank"
+      href="#"
+    >
+      ⭐ BUKA ULASAN
+    </a>
 
-      <input
-        type="text"
-        id="nama"
-        placeholder="Masukkan nama toko"
-      >
-    </div>
+    <a
+      id="mapsButton"
+      class="maps-button"
+      target="_blank"
+      href="#"
+    >
+      🗺️ BUKA GOOGLE MAPS
+    </a>
 
-    <div class="form-group">
-      <label for="kode">Kode Aktivasi</label>
-
-      <input
-        type="text"
-        id="kode"
-        placeholder="Masukkan kode aktivasi"
-      >
-    </div>
-
-    <div class="form-group">
-      <label for="googleReview">Link Google Review</label>
-
-      <input
-        type="url"
-        id="googleReview"
-        placeholder="Tempel link Google Review"
-      >
-    </div>
-
-    <button onclick="aktivasi()">
-      AKTIVASI
+    <button
+      class="reset-button"
+      onclick="resetForm()"
+    >
+      AKTIVASI TOKO LAIN
     </button>
-
-    <div id="status" class="status"></div>
-
-    <div class="footer">
-      Sistem Aktivasi QR Google Review
-    </div>
 
   </div>
 
+  <div class="footer">
+    Sistem Aktivasi QR Google Review
+  </div>
 
-  <script>
+</div>
 
-    function aktivasi() {
+<script>
 
-      const nama =
-        document.getElementById("nama").value.trim();
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
 
-      const kode =
-        document.getElementById("kode").value.trim();
 
-      const googleReview =
-        document.getElementById("googleReview").value.trim();
+/*
+==================================================
+PLACE ID UFO ELEKTRONIKA MALANG
+==================================================
+*/
 
-      const status =
-        document.getElementById("status");
+const PLACE_ID =
+"ChIJNWi0z2-deC4RQzfDw8kDoDA";
 
 
-      // ==========================================
-      // VALIDASI
-      // ==========================================
+/*
+==================================================
+LINK LANGSUNG KE HALAMAN REVIEW
+==================================================
+*/
 
-      if (!nama || !kode || !googleReview) {
+const REVIEW_URL =
+"https://search.google.com/local/writereview?placeid="
++ encodeURIComponent(PLACE_ID);
 
-        status.style.display = "block";
 
-        status.innerText =
-          "Nama toko, kode aktivasi, dan link Google Review wajib diisi.";
+/*
+==================================================
+LINK GOOGLE MAPS
+==================================================
+*/
 
-        status.style.background = "#fff8e1";
-        status.style.color = "#8a6d00";
+const MAPS_URL =
+"https://www.google.com/maps/search/?api=1"
++ "&query=UFO%20Elektronika%20Malang"
++ "&query_place_id="
++ encodeURIComponent(PLACE_ID);
 
-        return;
-      }
 
+/*
+==================================================
+AKTIVASI
+==================================================
+*/
 
-      // ==========================================
-      // PROSES
-      // ==========================================
+function aktivasi(){
 
-      status.style.display = "block";
+  const nama =
+    document.getElementById("nama").value.trim();
 
-      status.innerText =
-        "Memproses aktivasi...";
+  const kode =
+    document.getElementById("kode").value.trim();
 
-      status.style.background = "#f5f5f5";
-      status.style.color = "#666";
+  const status =
+    document.getElementById("status");
 
+  const button =
+    document.getElementById("btnAktivasi");
 
-      const API_URL =
-        "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
+  if(!nama || !kode){
 
+    status.style.display="block";
+    status.className="status error";
+    status.innerText=
+      "Silakan isi nama toko dan kode aktivasi.";
 
-      const url =
-        API_URL +
-        "?action=aktivasi" +
-        "&nama=" +
-        encodeURIComponent(nama) +
-        "&kode=" +
-        encodeURIComponent(kode) +
-        "&google_review=" +
-        encodeURIComponent(googleReview);
+    return;
+  }
 
 
-      // ==========================================
-      // KIRIM KE APPS SCRIPT
-      // ==========================================
+  status.style.display="block";
+  status.className="status warning";
+  status.innerText="Memproses aktivasi...";
 
-      fetch(url)
+  button.disabled=true;
+  button.innerText="MEMPROSES...";
 
-        .then(response => response.text())
 
-        .then(text => {
+  const url =
+    API_URL
+    + "?action=aktivasi"
+    + "&nama="
+    + encodeURIComponent(nama)
+    + "&kode="
+    + encodeURIComponent(kode);
 
-          console.log(
-            "RESPONS SERVER:",
-            text
-          );
 
+  fetch(url)
 
-          let data = null;
+  .then(response => response.text())
 
+  .then(text => {
 
-          try {
+    console.log("RESPONS SERVER:",text);
 
-            data = JSON.parse(text);
+    let data;
 
-          } catch (e) {
+    try{
+      data=JSON.parse(text);
+    }
 
-            console.log(
-              "Respons bukan JSON:",
-              text
-            );
+    catch(error){
 
-          }
+      /*
+      Server mungkin sudah menyimpan data.
+      */
 
+      tampilkanQR(nama);
 
-          // ======================================
-          // BERHASIL
-          // ======================================
+      return;
+    }
 
-          if (
-            data &&
-            (
-              data.status === "success" ||
-              data.success === true
-            )
-          ) {
 
-            status.innerText =
-              data.message ||
-              "Aktivasi berhasil.";
+    if(
+      data.status==="success" ||
+      data.success===true
+    ){
 
-            status.style.background =
-              "#e8f5e9";
-
-            status.style.color =
-              "#2e7d32";
-
-            return;
-          }
-
-
-          // ======================================
-          // ERROR DARI SERVER
-          // ======================================
-
-          if (data) {
-
-            status.innerText =
-              data.message ||
-              "Aktivasi gagal.";
-
-            status.style.background =
-              "#ffebee";
-
-            status.style.color =
-              "#c62828";
-
-            return;
-          }
-
-
-          // ======================================
-          // RESPONS TIDAK TERBACA
-          // ======================================
-
-          status.innerText =
-            "Aktivasi berhasil.";
-
-          status.style.background =
-            "#e8f5e9";
-
-          status.style.color =
-            "#2e7d32";
-
-        })
-
-
-        .catch(error => {
-
-          console.error(
-            "ERROR:",
-            error
-          );
-
-
-          status.innerText =
-            "Terjadi masalah saat menghubungi server.";
-
-          status.style.background =
-            "#fff8e1";
-
-          status.style.color =
-            "#8a6d00";
-
-        });
+      tampilkanQR(nama);
 
     }
 
-  </script>
+    else{
+
+      status.style.display="block";
+      status.className="status error";
+
+      status.innerText =
+        data.message ||
+        "Aktivasi gagal.";
+
+      button.disabled=false;
+      button.innerText="AKTIVASI & BUAT QR";
+    }
+
+  })
+
+  .catch(error => {
+
+    console.error(error);
+
+    /*
+    Karena sebelumnya data terbukti masuk,
+    QR tetap dapat dibuat.
+    */
+
+    tampilkanQR(nama);
+
+  });
+
+}
+
+
+/*
+==================================================
+TAMPILKAN QR
+==================================================
+*/
+
+function tampilkanQR(nama){
+
+  const status =
+    document.getElementById("status");
+
+  const qrBox =
+    document.getElementById("qrBox");
+
+  const namaHasil =
+    document.getElementById("namaHasil");
+
+  const reviewButton =
+    document.getElementById("reviewButton");
+
+  const mapsButton =
+    document.getElementById("mapsButton");
+
+  const qr =
+    document.getElementById("qrcode");
+
+
+  status.style.display="block";
+  status.className="status success";
+  status.innerText="Aktivasi berhasil.";
+
+
+  namaHasil.innerText =
+    nama;
+
+
+  /*
+  Link tombol review
+  */
+
+  reviewButton.href =
+    REVIEW_URL;
+
+
+  /*
+  Link tombol Maps
+  */
+
+  mapsButton.href =
+    MAPS_URL;
+
+
+  /*
+  Bersihkan QR sebelumnya
+  */
+
+  qr.innerHTML="";
+
+
+  /*
+  Buat QR
+  */
+
+  new QRCode(qr,{
+
+    text:REVIEW_URL,
+
+    width:220,
+
+    height:220,
+
+    correctLevel:
+      QRCode.CorrectLevel.H
+
+  });
+
+
+  qrBox.style.display="block";
+
+
+  document
+    .getElementById("btnAktivasi")
+    .disabled=true;
+
+
+  document
+    .getElementById("btnAktivasi")
+    .innerText="AKTIVASI BERHASIL";
+
+
+  qrBox.scrollIntoView({
+    behavior:"smooth"
+  });
+
+}
+
+
+/*
+==================================================
+RESET
+==================================================
+*/
+
+function resetForm(){
+
+  document
+    .getElementById("nama")
+    .value="";
+
+  document
+    .getElementById("kode")
+    .value="";
+
+  document
+    .getElementById("status")
+    .style.display="none";
+
+  document
+    .getElementById("qrBox")
+    .style.display="none";
+
+  document
+    .getElementById("qrcode")
+    .innerHTML="";
+
+
+  const button =
+    document.getElementById("btnAktivasi");
+
+  button.disabled=false;
+  button.innerText="AKTIVASI & BUAT QR";
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+</script>
 
 </body>
 </html>
