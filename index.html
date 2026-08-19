@@ -11,15 +11,15 @@
 
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6">
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-1">Generator Kartu Review</h1>
-        <p class="text-xs text-gray-500 text-center mb-6">Cukup ketik Nama Bisnis & Kota untuk membuat kartu QR.</p>
+        <p class="text-xs text-gray-500 text-center mb-6">Tempel Place ID (ChIJ...) untuk hasil yang 100% langsung ke ulasan.</p>
 
         <!-- Form Input -->
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Bisnis & Kota</label>
-                <input type="text" id="inputQuery" placeholder="Contoh: UFO Elektronika Malang" 
+                <label class="block text-sm font-medium text-gray-700 mb-1">Place ID Google</label>
+                <input type="text" id="inputQuery" placeholder="Contoh: ChIJNWi0z2-deC4RQzfDw8kDoDA" 
                     class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
-                <p class="text-[11px] text-gray-400 mt-1">Sistem otomatis mendeteksi kodenya di balik layar.</p>
+                <p class="text-[11px] text-gray-400 mt-1">Ambil kodenya via Google Place ID Finder agar langsung tembus.</p>
             </div>
 
             <button onclick="generateCard()" id="btnProcess"
@@ -30,7 +30,7 @@
 
         <!-- Status Loading -->
         <div id="loadingStatus" class="hidden text-center mt-4 text-blue-600 text-sm font-medium animate-pulse">
-            Mencari data lokasi & merakit QR Code...
+            Merakit QR Code...
         </div>
 
         <!-- Canvas Tersembunyi -->
@@ -51,7 +51,7 @@
 
     <script>
         // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
+        const SCRIPT_URL = "MASUKKAN_URL_WEB_APP_ANDA_DISINI";
 
         async function generateCard() {
             let query = document.getElementById('inputQuery').value.trim();
@@ -60,7 +60,7 @@
             const btnProcess = document.getElementById('btnProcess');
 
             if (!query) {
-                alert("Mohon masukkan nama bisnis dan kota!");
+                alert("Mohon masukkan Place ID!");
                 return;
             }
 
