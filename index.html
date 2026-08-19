@@ -134,6 +134,7 @@
 
     <div class="form-group">
       <label for="nama">Nama Toko</label>
+
       <input
         type="text"
         id="nama"
@@ -143,10 +144,21 @@
 
     <div class="form-group">
       <label for="kode">Kode Aktivasi</label>
+
       <input
         type="text"
         id="kode"
         placeholder="Masukkan kode aktivasi"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="googleReview">Link Google Review</label>
+
+      <input
+        type="url"
+        id="googleReview"
+        placeholder="Tempel link Google Review"
       >
     </div>
 
@@ -162,98 +174,186 @@
 
   </div>
 
+
   <script>
+
     function aktivasi() {
 
-      const nama = document.getElementById("nama").value.trim();
-      const kode = document.getElementById("kode").value.trim();
-      const status = document.getElementById("status");
+      const nama =
+        document.getElementById("nama").value.trim();
 
-      if (!nama || !kode) {
+      const kode =
+        document.getElementById("kode").value.trim();
+
+      const googleReview =
+        document.getElementById("googleReview").value.trim();
+
+      const status =
+        document.getElementById("status");
+
+
+      // ==========================================
+      // VALIDASI
+      // ==========================================
+
+      if (!nama || !kode || !googleReview) {
+
         status.style.display = "block";
-        status.innerText = "Silakan isi nama toko dan kode aktivasi.";
+
+        status.innerText =
+          "Nama toko, kode aktivasi, dan link Google Review wajib diisi.";
+
         status.style.background = "#fff8e1";
         status.style.color = "#8a6d00";
+
         return;
       }
 
+
+      // ==========================================
+      // PROSES
+      // ==========================================
+
       status.style.display = "block";
-      status.innerText = "Memproses aktivasi...";
+
+      status.innerText =
+        "Memproses aktivasi...";
+
       status.style.background = "#f5f5f5";
       status.style.color = "#666";
+
 
       const API_URL =
         "https://script.google.com/macros/s/AKfycbyYenFPWC8zwnYgeF_Rl3W8o8Ndw4muz4--bfCW6tm6CvCVMIGkvkUf-T2TLpaIwxsHTw/exec";
 
+
       const url =
         API_URL +
         "?action=aktivasi" +
-        "&nama=" + encodeURIComponent(nama) +
-        "&kode=" + encodeURIComponent(kode);
+        "&nama=" +
+        encodeURIComponent(nama) +
+        "&kode=" +
+        encodeURIComponent(kode) +
+        "&google_review=" +
+        encodeURIComponent(googleReview);
+
+
+      // ==========================================
+      // KIRIM KE APPS SCRIPT
+      // ==========================================
 
       fetch(url)
+
         .then(response => response.text())
+
         .then(text => {
 
-          console.log("RESPONS SERVER:", text);
+          console.log(
+            "RESPONS SERVER:",
+            text
+          );
+
 
           let data = null;
 
+
           try {
+
             data = JSON.parse(text);
+
           } catch (e) {
-            console.log("Respons bukan JSON:", text);
+
+            console.log(
+              "Respons bukan JSON:",
+              text
+            );
+
           }
 
-          /*
-           * Jika server mengembalikan JSON
-           */
-          if (data) {
 
-            if (
-              data.success === true ||
-              data.status === "success"
-            ) {
+          // ======================================
+          // BERHASIL
+          // ======================================
 
-              status.innerText =
-                data.message || "Aktivasi berhasil.";
+          if (
+            data &&
+            (
+              data.status === "success" ||
+              data.success === true
+            )
+          ) {
 
-              status.style.background = "#e8f5e9";
-              status.style.color = "#2e7d32";
+            status.innerText =
+              data.message ||
+              "Aktivasi berhasil.";
 
-            } else {
+            status.style.background =
+              "#e8f5e9";
 
-              status.innerText =
-                data.message || "Aktivasi gagal.";
-
-              status.style.background = "#ffebee";
-              status.style.color = "#c62828";
-            }
+            status.style.color =
+              "#2e7d32";
 
             return;
           }
 
-          /*
-           * Jika server sudah menjalankan aktivasi
-           * tetapi respons tidak berupa JSON
-           */
-          status.innerText = "Aktivasi berhasil.";
-          status.style.background = "#e8f5e9";
-          status.style.color = "#2e7d32";
 
-        })
-        .catch(error => {
+          // ======================================
+          // ERROR DARI SERVER
+          // ======================================
 
-          console.error("ERROR:", error);
+          if (data) {
+
+            status.innerText =
+              data.message ||
+              "Aktivasi gagal.";
+
+            status.style.background =
+              "#ffebee";
+
+            status.style.color =
+              "#c62828";
+
+            return;
+          }
+
+
+          // ======================================
+          // RESPONS TIDAK TERBACA
+          // ======================================
 
           status.innerText =
-            "Aktivasi sedang diproses. Silakan cek kembali.";
+            "Aktivasi berhasil.";
 
-          status.style.background = "#fff8e1";
-          status.style.color = "#8a6d00";
+          status.style.background =
+            "#e8f5e9";
+
+          status.style.color =
+            "#2e7d32";
+
+        })
+
+
+        .catch(error => {
+
+          console.error(
+            "ERROR:",
+            error
+          );
+
+
+          status.innerText =
+            "Terjadi masalah saat menghubungi server.";
+
+          status.style.background =
+            "#fff8e1";
+
+          status.style.color =
+            "#8a6d00";
 
         });
+
     }
+
   </script>
 
 </body>
